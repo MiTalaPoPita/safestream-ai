@@ -3,11 +3,17 @@
 // app/player/page.tsx
 import { useState, useRef, useCallback } from "react";
 import Link                              from "next/link";
+import dynamic                           from "next/dynamic";
 import { useFlickerDetector }            from "@/hooks/useFlickerDetector";
 import { DigitalSunglasses }             from "@/components/DigitalSunglasses";
 import { SafetyDashboard }               from "@/components/SafetyDashboard";
-import { ExportPanel }                   from "@/components/ExportPanel";
-import { generateSafeShareURL, copyShareURLToClipboard } from "@/lib/safeShare";
+import { generateSafeShareURL, copyToClipboard } from "@/lib/safeShare";
+
+// פותר את השגיאה של FFmpeg! טוען את הרכיב רק בדפדפן ולא בשרת של Vercel
+const ExportPanel = dynamic(
+  () => import("@/components/ExportPanel").then((mod) => mod.ExportPanel),
+  { ssr: false }
+);
 
 interface Props {
   initialSrc?:        string | null;
@@ -56,7 +62,7 @@ export default function PlayerPage({ initialSrc = null, initialProtection = true
   const handleShare = async () => {
     if (!src) return;
     const { shareURL } = generateSafeShareURL(src);
-    await copyShareURLToClipboard(shareURL);
+    await copyToClipboard(shareURL);
     setShareCopied(true);
     setTimeout(() => setShareCopied(false), 2400);
   };
