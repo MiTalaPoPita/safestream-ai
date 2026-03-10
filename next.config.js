@@ -1,14 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 
+  // ── Next.js 16 Fix ────────────────────────────────────────────────────────
+  // משתיק את השגיאה של Turbopack ומכריח את המערכת להשתמש ב-Webpack המותאם לוידאו
+  turbopack: {},
+
   // ── Silence TS/ESLint errors during Vercel CI ─────────────────────────────
-  // Catch them locally with: npm run type-check && npm run lint
+  // מונע מהבנייה להיעצר על אזהרות קטנות - אנחנו בודקים אותן מקומית
   typescript: { ignoreBuildErrors: true },
-  eslint:     { ignoreDuringBuilds: true },
+  eslint:      { ignoreDuringBuilds: true },
 
   // ── Cross-Origin Isolation ────────────────────────────────────────────────
-  // Required for SharedArrayBuffer → FFmpeg.wasm multi-thread support.
-  // Both headers must be present on EVERY response.
+  // הכרחי עבור FFmpeg.wasm כדי להשתמש ב-SharedArrayBuffer (עיבוד מהיר)
   async headers() {
     return [
       {
@@ -21,7 +24,7 @@ const nextConfig = {
         ],
       },
       {
-        // Serve WASM files with the correct MIME type
+        // הגדרת סוג הקובץ עבור מנוע ה-AI
         source: "/:path*.wasm",
         headers: [
           { key: "Content-Type",                 value: "application/wasm" },
@@ -31,12 +34,13 @@ const nextConfig = {
     ];
   },
 
-  // ── Webpack: keep WASM out of the bundle ──────────────────────────────────
-  // @ffmpeg/ffmpeg fetches WASM at runtime — do not let webpack inline it.
+  // ── Webpack: Custom config for FFmpeg.wasm ────────────────────────────────
   webpack(config) {
     config.resolve.fallback = {
       ...config.resolve.fallback,
-      fs: false, path: false, crypto: false,
+      fs: false, 
+      path: false, 
+      crypto: false,
     };
     config.module.rules.push({
       test: /\.wasm$/,
