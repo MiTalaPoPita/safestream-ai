@@ -1,12 +1,13 @@
 "use client";
 
-// components/PlayerPage.tsx
+// app/player/page.tsx
 import { useState, useRef, useCallback } from "react";
-import { useFlickerDetector } from "@/hooks/useFlickerDetector";
-import { DigitalSunglasses }   from "@/components/DigitalSunglasses";
-import { SafetyDashboard }     from "@/components/SafetyDashboard";
-import { ExportPanel }         from "@/components/ExportPanel";
-import { generateSafeShareURL, copyToClipboard } from "@/lib/safeShare";
+import Link                              from "next/link";
+import { useFlickerDetector }            from "@/hooks/useFlickerDetector";
+import { DigitalSunglasses }             from "@/components/DigitalSunglasses";
+import { SafetyDashboard }               from "@/components/SafetyDashboard";
+import { ExportPanel }                   from "@/components/ExportPanel";
+import { generateSafeShareURL, copyShareURLToClipboard } from "@/lib/safeShare";
 
 interface Props {
   initialSrc?:        string | null;
@@ -15,7 +16,8 @@ interface Props {
 
 const DEMO = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
 
-export function PlayerPage({ initialSrc = null, initialProtection = true }: Props) {
+// Vercel / Next.js MUST have 'export default' for pages
+export default function PlayerPage({ initialSrc = null, initialProtection = true }: Props) {
   const videoRef   = useRef<HTMLVideoElement>(null);
   const hideTimer  = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -55,7 +57,7 @@ export function PlayerPage({ initialSrc = null, initialProtection = true }: Prop
   const handleShare = async () => {
     if (!src) return;
     const { shareURL } = generateSafeShareURL(src);
-    await copyToClipboard(shareURL);
+    await copyShareURLToClipboard(shareURL);
     setShareCopied(true);
     setTimeout(() => setShareCopied(false), 2400);
   };
@@ -77,7 +79,7 @@ export function PlayerPage({ initialSrc = null, initialProtection = true }: Prop
             <button onClick={handleShare} style={{ padding:"5px 13px", borderRadius:6, background:"transparent", border:"1px solid var(--border)", color:"var(--t3)", fontFamily:"inherit", fontSize:8.5, letterSpacing:".12em", cursor:"pointer" }}>
               {shareCopied ? "✓ Copied" : "⎘ Safe-Share"}
             </button>
-            <button className="btn-primary" onClick={() => setShowExport(true)} style={{ padding:"6px 16px", borderRadius:6, fontSize:8.5 }}>
+            <button className="cta-primary" onClick={() => setShowExport(true)} style={{ padding:"6px 16px", borderRadius:6, fontSize:8.5 }}>
               ↓ Export
             </button>
           </>
@@ -92,20 +94,20 @@ export function PlayerPage({ initialSrc = null, initialProtection = true }: Prop
             <div style={{ display:"flex", gap:9 }}>
               <input value={urlIn} onChange={e => setUrlIn(e.target.value)} onKeyDown={e => e.key==="Enter" && urlIn.trim() && setSrc(urlIn.trim())}
                 placeholder="Paste video URL (MP4, HLS, DASH)…"
-                style={{ flex:1, padding:"11px 14px", borderRadius:8, background:"var(--s1)", border:"1px solid var(--border)", color:"var(--t1)", fontFamily:"inherit", fontSize:11, outline:"none" }}
+                style={{ flex:1, padding:"11px 14px", borderRadius:8, background:"var(--surface-2)", border:"1px solid var(--border)", color:"var(--text-1)", fontFamily:"inherit", fontSize:11, outline:"none" }}
                 onFocus={e=>(e.target.style.borderColor="rgba(16,185,129,.35)")}
                 onBlur={e =>(e.target.style.borderColor="var(--border)")}
               />
-              <button className="btn-primary" onClick={() => urlIn.trim() && setSrc(urlIn.trim())} style={{ padding:"11px 20px", borderRadius:8, fontSize:9 }}>Load →</button>
+              <button className="cta-primary" onClick={() => urlIn.trim() && setSrc(urlIn.trim())} style={{ padding:"11px 20px", borderRadius:8, fontSize:9 }}>Load →</button>
             </div>
 
-            <label style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:10, padding:"26px 0", border:"1px dashed rgba(255,255,255,.07)", borderRadius:10, cursor:"pointer", color:"var(--t3)", fontSize:9.5, letterSpacing:".1em", textTransform:"uppercase" }}>
+            <label style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:10, padding:"26px 0", border:"1px dashed rgba(255,255,255,.07)", borderRadius:10, cursor:"pointer", color:"var(--text-3)", fontSize:9.5, letterSpacing:".1em", textTransform:"uppercase" }}>
               <input type="file" accept="video/*" style={{ display:"none" }}
                 onChange={e => { const f = e.target.files?.[0]; if (f?.type.startsWith("video/")) setSrc(URL.createObjectURL(f)); }} />
               📁  Drop or select a video file  ·  MP4 · MOV · WEBM · MKV
             </label>
 
-            <button onClick={() => setSrc(DEMO)} style={{ alignSelf:"center", padding:"7px 18px", borderRadius:8, background:"rgba(16,185,129,.07)", border:"1px solid rgba(16,185,129,.2)", color:"var(--em)", fontFamily:"inherit", fontSize:9, letterSpacing:".12em", cursor:"pointer" }}>
+            <button onClick={() => setSrc(DEMO)} style={{ alignSelf:"center", padding:"7px 18px", borderRadius:8, background:"rgba(16,185,129,.07)", border:"1px solid rgba(16,185,129,.2)", color:"var(--emerald)", fontFamily:"inherit", fontSize:9, letterSpacing:".12em", cursor:"pointer" }}>
               ▶ Load demo video (Big Buck Bunny)
             </button>
           </div>
@@ -125,7 +127,7 @@ export function PlayerPage({ initialSrc = null, initialProtection = true }: Prop
               playsInline crossOrigin="anonymous" />
           ) : (
             <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-              <div style={{ textAlign:"center", color:"var(--s3)" }}>
+              <div style={{ textAlign:"center", color:"var(--text-3)" }}>
                 <div style={{ fontSize:42, marginBottom:10 }}>🛡</div>
                 <p style={{ fontSize:10, letterSpacing:".12em" }}>LOAD A VIDEO ABOVE TO BEGIN</p>
               </div>
@@ -138,7 +140,7 @@ export function PlayerPage({ initialSrc = null, initialProtection = true }: Prop
           )}
 
           {/* Safety HUD */}
-          <SafetyDashboard result={protection ? flicker : { riskLevel:"SAFE", filterIntensity:0, flashHz:0, currentLuminance:0, luminanceDelta:0, relativeChange:0, shouldFilter:false, isUnsafe:false, frames:0, shielded:0, dangers:0 }} visible={dashOpen} onToggle={() => setDashOpen(o=>!o)} />
+          <SafetyDashboard result={protection ? flicker : { riskLevel:"SAFE", filterIntensity:0, flashHz:0, currentLuminance:0, luminanceDelta:0, relativeChange:0, shouldFilter:false, isUnsafe:false, frameCount:0, filteredCount:0, dangerCount:0 }} visible={dashOpen} onToggle={() => setDashOpen(o=>!o)} />
 
           {/* Controls */}
           {src && (
@@ -167,14 +169,14 @@ export function PlayerPage({ initialSrc = null, initialProtection = true }: Prop
                   onChange={e=>{ const v=parseFloat(e.target.value); setVolume(v); setMuted(v===0); if(videoRef.current){ videoRef.current.volume=v; videoRef.current.muted=v===0; } }}
                   style={{ width:56 }} />
 
-                <span style={{ fontSize:9.5, color:"var(--t3)" }}>{fmt(currentTime)} / {fmt(duration)}</span>
+                <span style={{ fontSize:9.5, color:"var(--text-3)" }}>{fmt(currentTime)} / {fmt(duration)}</span>
                 <div style={{ flex:1 }} />
 
                 {/* Shield toggle */}
                 <button onClick={()=>setProtection(p=>!p)} style={{ padding:"4px 10px", borderRadius:100,
                   background: protection?"rgba(16,185,129,.12)":"rgba(255,255,255,.04)",
                   border:`1px solid ${protection?"rgba(16,185,129,.3)":"rgba(255,255,255,.06)"}`,
-                  color: protection?"#10b981":"var(--t3)",
+                  color: protection?"#10b981":"var(--text-3)",
                   fontFamily:"inherit", fontSize:8, letterSpacing:".12em", cursor:"pointer" }}>
                   {protection?"🛡 Protected":"○ Shield off"}
                 </button>
@@ -199,7 +201,7 @@ export function PlayerPage({ initialSrc = null, initialProtection = true }: Prop
 
         {src && (
           <div style={{ marginTop:11, display:"flex", justifyContent:"flex-end" }}>
-            <button onClick={()=>setSrc(null)} style={{ padding:"6px 13px", borderRadius:6, background:"transparent", border:"1px solid var(--border)", color:"var(--t3)", fontFamily:"inherit", fontSize:8.5, cursor:"pointer" }}>
+            <button onClick={()=>setSrc(null)} style={{ padding:"6px 13px", borderRadius:6, background:"transparent", border:"1px solid var(--border)", color:"var(--text-3)", fontFamily:"inherit", fontSize:8.5, cursor:"pointer" }}>
               ← Load different video
             </button>
           </div>
@@ -209,9 +211,9 @@ export function PlayerPage({ initialSrc = null, initialProtection = true }: Prop
       {/* Export modal */}
       {showExport && src && (
         <ExportPanel
-          source={src}
-          srcName={src.split("/").pop()?.replace(/\?.*$/,"") ?? "video.mp4"}
-          params={exportParams}
+          sourceFile={src}
+          sourceName={src.split("/").pop()?.replace(/\?.*$/,"") ?? "video.mp4"}
+          filterParams={exportParams}
           onClose={()=>setShowExport(false)}
         />
       )}
