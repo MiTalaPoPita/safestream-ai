@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { ffmpegEngine }          from "./ffmpeg";
-import type { FilterParams, ExportResult, ExportProgress, ExportPhase } from "./ffmpeg";
+import { ffmpegEngine }          from "@/lib/ffmpeg";
+import type { FilterParams, ExportResult, ExportProgress, ExportPhase } from "@/lib/ffmpeg";
 
 export type ExportStatus = "idle" | "loading" | "exporting" | "done" | "error";
 
