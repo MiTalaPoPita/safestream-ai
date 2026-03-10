@@ -16,7 +16,6 @@ interface Props {
 
 const DEMO = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
 
-// Vercel / Next.js MUST have 'export default' for pages
 export default function PlayerPage({ initialSrc = null, initialProtection = true }: Props) {
   const videoRef   = useRef<HTMLVideoElement>(null);
   const hideTimer  = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -36,7 +35,7 @@ export default function PlayerPage({ initialSrc = null, initialProtection = true
 
   const flicker = useFlickerDetector(videoRef, protection && !!src);
 
-  // Filter params passed to ExportPanel (use detected values or sensible defaults)
+  // Filter params passed to ExportPanel
   const exportParams = {
     brightness: -(flicker.filterIntensity * 0.65) || -0.15,
     contrast:   1 - flicker.filterIntensity * 0.35 || 0.72,
@@ -63,23 +62,23 @@ export default function PlayerPage({ initialSrc = null, initialProtection = true
   };
 
   return (
-    <div style={{ minHeight:"100vh", background:"var(--obs)", color:"var(--t1)", fontFamily:"var(--font-mono, monospace)" }}>
+    <div style={{ minHeight:"100vh", background:"var(--obs)", color:"var(--text-1)", fontFamily:"var(--font-mono, monospace)" }}>
 
       {/* ── NAV ── */}
       <nav style={{ position:"sticky", top:0, zIndex:200, background:"rgba(2,4,6,.92)", backdropFilter:"blur(20px)", borderBottom:"1px solid var(--border)", padding:"0 32px", height:52, display:"flex", alignItems:"center", gap:14 }}>
         <Link href="/" style={{ display:"flex", alignItems:"center", gap:8, textDecoration:"none" }}>
-          <div style={{ width:6, height:6, borderRadius:"50%", background:"var(--em)", boxShadow:"0 0 7px var(--em)" }} />
+          <div style={{ width:6, height:6, borderRadius:"50%", background:"var(--emerald)", boxShadow:"0 0 7px var(--emerald)" }} />
           <span style={{ fontFamily:"var(--font-display, Syne, sans-serif)", fontSize:16, fontWeight:800, color:"#fff" }}>
-            Safe<span style={{ color:"var(--em)" }}>Stream</span><span style={{ color:"var(--s3)" }}>AI</span>
+            Safe<span style={{ color:"var(--emerald)" }}>Stream</span><span style={{ color:"var(--surface-3)" }}>AI</span>
           </span>
         </Link>
         <div style={{ flex:1 }} />
         {src && (
           <>
-            <button onClick={handleShare} style={{ padding:"5px 13px", borderRadius:6, background:"transparent", border:"1px solid var(--border)", color:"var(--t3)", fontFamily:"inherit", fontSize:8.5, letterSpacing:".12em", cursor:"pointer" }}>
+            <button onClick={handleShare} style={{ padding:"5px 13px", borderRadius:6, background:"transparent", border:"1px solid var(--border)", color:"var(--text-3)", fontFamily:"inherit", fontSize:8.5, letterSpacing:".12em", cursor:"pointer" }}>
               {shareCopied ? "✓ Copied" : "⎘ Safe-Share"}
             </button>
-            <button className="cta-primary" onClick={() => setShowExport(true)} style={{ padding:"6px 16px", borderRadius:6, fontSize:8.5 }}>
+            <button className="cta-primary" onClick={() => setShowExport(true)} style={{ padding:"6px 16px", borderRadius:6, fontSize:8.5, marginLeft: 10 }}>
               ↓ Export
             </button>
           </>
