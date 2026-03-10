@@ -2,11 +2,10 @@
 
 // components/PlayerPage.tsx
 import { useState, useRef, useCallback } from "react";
-import Link                              from "next/link";
-import { useFlickerDetector }            from "@/lib/useFlickerDetector";
-import { DigitalSunglasses }             from "./DigitalSunglasses";
-import { SafetyDashboard }               from "./SafetyDashboard";
-import { ExportPanel }                   from "./ExportPanel";
+import { useFlickerDetector } from "@/hooks/useFlickerDetector";
+import { DigitalSunglasses }   from "@/components/DigitalSunglasses";
+import { SafetyDashboard }     from "@/components/SafetyDashboard";
+import { ExportPanel }         from "@/components/ExportPanel";
 import { generateSafeShareURL, copyToClipboard } from "@/lib/safeShare";
 
 interface Props {
