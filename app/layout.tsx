@@ -12,7 +12,7 @@ const mono = JetBrains_Mono({
 const display = Syne({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["400", "600", "700", "800", "900"],
+  weight: ["400", "600", "700", "800"],
   display: "swap",
 });
 
